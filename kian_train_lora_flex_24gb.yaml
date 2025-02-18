@@ -1,0 +1,90 @@
+job: extension
+config:
+  name: Kian_flex_lora_v1
+  process:
+  - type: sd_trainer
+    training_folder: output
+    device: cuda:0
+    trigger_word: Kianz
+    network:
+      type: lora
+      linear: 32
+      linear_alpha: 32
+    save:
+      dtype: float16
+      save_every: 500
+      max_step_saves_to_keep: 4
+      push_to_hub: false
+    datasets:
+    - folder_path: /workspace/Datasets/Kian_outputs
+      caption_ext: txt
+      caption_dropout_rate: 0.05
+      shuffle_tokens: false
+      cache_latents_to_disk: true
+      resolution:
+      - 512
+      - 768
+      - 1024
+    train:
+      batch_size: 1
+      bypass_guidance_embedding: true
+      steps: 3000
+      gradient_accumulation: 1
+      train_unet: true
+      train_text_encoder: false
+      gradient_checkpointing: true
+      noise_scheduler: flowmatch
+      optimizer: adamw8bit
+      lr: 0.0001
+      ema_config:
+        use_ema: true
+        ema_decay: 0.99
+      dtype: bf16
+    model:
+      name_or_path: ostris/Flex.1-alpha
+      is_flux: true
+      quantize: true
+      quantize_kwargs:
+        exclude:
+        - '*time_text_embed*'
+    sample:
+      sampler: flowmatch
+      sample_every: 250
+      width: 1024
+      height: 1024
+      prompts:
+      - instagram portrait of [trigger] a middle-aged man with a beard and glasses.
+        He is standing in front of a green background and is wearing a white t-shirt.
+        He has a serious expression on his face and is looking directly at the camera.
+        His hair is neatly combed back and he has a slight smile on his lips. The
+        lighting is soft and natural, highlighting the man's features.
+      - instagram photo of [trigger] a young man with a beard and glasses standing
+        in front of a green screen. He is wearing a white t-shirt and appears to be
+        in a room with a black chair in the background. The man has a serious expression
+        on his face and is looking off to the side. His hair is styled in a messy
+        yet fashionable manner and he has a slight smile on his lips. The overall
+        mood of the image is serious and contemplative.
+      - instagram portrait of [trigger] a man standing in front of a cityscape. He
+        is wearing a yellow polo shirt and has a pair of glasses on. He has a beard
+        and mustache and is looking directly at the camera with a serious expression.
+        The background is blurred, but it appears to be a city with buildings and
+        hills in the distance. The sky is orange and pink, indicating that it is either
+        sunrise or sunset. The overall mood of the image is calm and relaxed.
+      - a close-up portrait of [trigger] a young man with a mustache and glasses.
+        He is wearing a beige trench coat over a white collared shirt and a black
+        tie. He has short dark hair and is looking directly at the camera with a serious
+        expression. The background is blurred, but it appears to be an indoor setting
+        with a wooden wall and a window.
+      - '[trigger] is a man walking on a sidewalk in front of a building. He is wearing
+        a white button-down shirt, light blue trousers, and a dark purple tie. He
+        has a black belt around his waist and is holding a black jacket in his left
+        hand. He appears to be walking with a serious expression on his face. The
+        building behind him has large windows and a wooden bench.'
+      neg: ''
+      seed: 42
+      walk_seed: true
+      guidance_scale: 4
+      sample_steps: 25
+meta:
+  name: Kian_flex_lora_v1
+  version: '1.0'
